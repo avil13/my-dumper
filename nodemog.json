@@ -1,0 +1,9 @@
+{
+    "verbose": true,
+    "ignore": ["dmpr"],
+    "watch" : [
+        "*.go"
+    ],
+    "ext": ".go,.env",
+    "exec": "go build -o dmpr . && ./dmpr"
+}
