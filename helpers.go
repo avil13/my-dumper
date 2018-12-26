@@ -55,6 +55,8 @@ func dumpDir(dir string) (err error) {
 // makeEnv - create .env file
 func makeEnv() {
 	tmpl := `# Examle .env vars
+TITLE=my.Site.com
+
 DB_HOST=mysql
 DB_PORT=3306
 DB_DATABASE=homestead

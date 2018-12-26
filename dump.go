@@ -21,12 +21,14 @@ type Table struct {
 
 // Dump ...
 type Dump struct {
+	Title  string
 	Date   time.Time
 	Tables []*Table
 }
 
 const createTableTemplate = `
 -- -----------------------
+-- Dump for: {{ .Title }}
 -- Date: {{ .Date | dateExec }}
 -- Execution time: {{ .Date | execTime }}
 -- -----------------------
@@ -41,6 +43,7 @@ DROP TABLE IF EXISTS {{ .Name }};
 
 const insertTableTemplate = `
 -- -----------------------
+-- Dump for: {{ .Title }}
 -- Date: {{ .Date | dateExec }}
 -- Execution time: {{ .Date | execTime }}
 -- -----------------------
@@ -81,6 +84,7 @@ func GetDump() *Dump {
 	checkErr(err, "Not found tables")
 
 	data := Dump{
+		Title:  env["TITLE"],
 		Date:   time.Now(),
 		Tables: make([]*Table, 0),
 	}

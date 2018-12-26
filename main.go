@@ -45,7 +45,7 @@ func init() {
 		envLoadErrorMessage("Error loading .env file variables")
 	}
 
-	validKeys := []string{"DB_HOST", "DB_PORT", "DB_DATABASE", "DB_USERNAME", "DB_PASSWORD"}
+	validKeys := []string{"TITLE", "DB_HOST", "DB_PORT", "DB_DATABASE", "DB_USERNAME", "DB_PASSWORD"}
 	checkParams(&env, validKeys)
 
 	if env["DEBUG"] != "false" {
