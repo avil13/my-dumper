@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 	"path"
@@ -20,25 +21,28 @@ type Table struct {
 
 // Dump ...
 type Dump struct {
-	DateTime string
-	Tables   []*Table
+	Date   time.Time
+	Tables []*Table
 }
 
 const createTableTemplate = `
 -- -----------------------
--- Date: {{ .DateTime }}
+-- Date: {{ .Date | dateExec }}
+-- Execution time: {{ .Date | execTime }}
 -- -----------------------
 {{ range .Tables }}
 --
 -- Table structure for table "{{ .Name }}"
 --
-{{.SQL}}
+DROP TABLE IF EXISTS {{ .Name }};
+{{.SQL}};
 {{end}}
 `
 
 const insertTableTemplate = `
 -- -----------------------
--- Date: {{ .DateTime }}
+-- Date: {{ .Date | dateExec }}
+-- Execution time: {{ .Date | execTime }}
 -- -----------------------
 {{ range .Tables }}
 --
@@ -56,8 +60,13 @@ UNLOCK TABLES;
 
 `
 
-var reportCreate = template.Must(template.New("create").Parse(createTableTemplate))
-var reportInsert = template.Must(template.New("insert").Parse(insertTableTemplate))
+var reportCreate = template.Must(template.New("create").
+	Funcs(template.FuncMap{"execTime": execTime, "dateExec": dateExec}).
+	Parse(createTableTemplate))
+
+var reportInsert = template.Must(template.New("insert").
+	Funcs(template.FuncMap{"execTime": execTime, "dateExec": dateExec}).
+	Parse(insertTableTemplate))
 
 // Funcs(template.FuncMap{"dayAgo": daysAgo}).
 
@@ -72,8 +81,8 @@ func GetDump() *Dump {
 	checkErr(err, "Not found tables")
 
 	data := Dump{
-		DateTime: time.Now().Format("2006-01-02 15:04"),
-		Tables:   make([]*Table, 0),
+		Date:   time.Now(),
+		Tables: make([]*Table, 0),
 	}
 
 	for _, tableName := range tables {
@@ -116,4 +125,13 @@ func MakeDumpFiles(data *Dump, isInsert bool) {
 	if err := report.Execute(file, data); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func execTime(start time.Time) string {
+	elapsed := time.Since(start)
+	return fmt.Sprintf("%s", elapsed)
+}
+
+func dateExec(start time.Time) string {
+	return start.Format("2006-01-02 15:04")
 }

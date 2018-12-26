@@ -29,11 +29,15 @@ func checkParams(data *map[string]string, params []string) {
 		}
 	}
 	if errList != "" {
-		log.Fatalf(
-			"We have a few problems with 'env' variables \n"+
-				"To create the '.env' file, specify the option --make-env\n\n"+
-				"%s", errList)
+		envLoadErrorMessage(errList)
 	}
+}
+
+func envLoadErrorMessage(msg string) {
+	log.Fatalf(
+		"We have a few problems with 'env' variables \n"+
+			"To create the '.env' file, specify the option --make-env\n\n"+
+			"%s", msg)
 }
 
 // dumpDir - make dump folder
@@ -58,6 +62,8 @@ DB_USERNAME=homestead
 DB_PASSWORD=secret
 
 DUMP_DIR=dumps
+
+DEBUG=false
 	`
 	file, err := os.Create(".env")
 	checkErr(err, "Can't create file '.env'")

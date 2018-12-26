@@ -10,10 +10,10 @@ import (
 )
 
 var env map[string]string
-var createEnv *bool
+var createEnv bool
 
 func main() {
-	if *createEnv {
+	if createEnv {
 		return
 	}
 	// create dump/date folder
@@ -26,22 +26,31 @@ func main() {
 }
 
 func init() {
-	createEnv = flag.Bool("--make-env", false, "create .env boilerplate file")
+	flag.BoolVar(&createEnv, "make-env", false, "create .env boilerplate file")
+	flag.Parse()
 
-	if *createEnv {
+	if createEnv {
 		makeEnv()
 		return
 	}
 
 	err := godotenv.Load()
+	if err != nil {
+		envLoadErrorMessage("Error loading .env file")
+	}
 	checkErr(err, "Error loading .env file")
 
 	env, err = godotenv.Read()
-	checkErr(err, "Error loading .env file variables")
+	if err != nil {
+		envLoadErrorMessage("Error loading .env file variables")
+	}
 
 	validKeys := []string{"DB_HOST", "DB_PORT", "DB_DATABASE", "DB_USERNAME", "DB_PASSWORD"}
 	checkParams(&env, validKeys)
 
-	// env["DUMP_SUB_DIR"] = path.Join(env["DUMP_DIR"], time.Now().Format("2006-01-02_15:04"))
-	env["DUMP_SUB_DIR"] = path.Join(env["DUMP_DIR"], time.Now().Format("2006-01-02"))
+	if env["DEBUG"] != "false" {
+		env["DUMP_SUB_DIR"] = path.Join(env["DUMP_DIR"], time.Now().Format("2006-01-02_15:04"))
+	} else {
+		env["DUMP_SUB_DIR"] = path.Join(env["DUMP_DIR"], time.Now().Format("2006-01-02"))
+	}
 }
