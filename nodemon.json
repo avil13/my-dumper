@@ -1,6 +1,6 @@
 {
     "verbose": true,
-    "ignore": ["dmpr"],
+    "ignore": ["dmpr", "dumps", "!**/*.go"],
     "watch" : [
         "*.go"
     ],

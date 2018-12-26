@@ -1,3 +1,3 @@
 #!/bin/bash
 
-nodemon --config nodemog.json
+nodemon --config nodemon.json
