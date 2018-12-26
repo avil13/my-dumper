@@ -111,6 +111,10 @@ func MakeDumpFiles(data *Dump, isInsert bool) {
 		fileName = "create.sql"
 	}
 
+	if env["DEBUG"] != "true" {
+		fileName = data.Date.Format("2006-01-02_15:04") + "_" + fileName
+	}
+
 	p := path.Join(env["DUMP_SUB_DIR"], fileName)
 
 	file, err := os.Create(p)
@@ -129,6 +133,8 @@ func MakeDumpFiles(data *Dump, isInsert bool) {
 	if err := report.Execute(file, data); err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Println("📃  Created: ", p)
 }
 
 func execTime(start time.Time) string {

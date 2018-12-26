@@ -3,6 +3,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"path"
 	"time"
 
@@ -21,8 +22,17 @@ func main() {
 
 	dump := GetDump()
 
-	MakeDumpFiles(dump, false)
-	MakeDumpFiles(dump, true)
+	if env["DUMP_CREATE"] != "false" {
+		MakeDumpFiles(dump, false)
+	}
+
+	if env["DUMP_INSERT"] != "false" {
+		MakeDumpFiles(dump, true)
+	}
+
+	if env["DUMP_INSERT"] == "false" && env["DUMP_CREATE"] == "false" {
+		fmt.Println("⚠️  None of the files are not created")
+	}
 }
 
 func init() {
@@ -48,9 +58,5 @@ func init() {
 	validKeys := []string{"TITLE", "DB_HOST", "DB_PORT", "DB_DATABASE", "DB_USERNAME", "DB_PASSWORD"}
 	checkParams(&env, validKeys)
 
-	if env["DEBUG"] != "false" {
-		env["DUMP_SUB_DIR"] = path.Join(env["DUMP_DIR"], time.Now().Format("2006-01-02_15:04"))
-	} else {
-		env["DUMP_SUB_DIR"] = path.Join(env["DUMP_DIR"], time.Now().Format("2006-01-02"))
-	}
+	env["DUMP_SUB_DIR"] = path.Join(env["DUMP_DIR"], time.Now().Format("2006-01-02"))
 }

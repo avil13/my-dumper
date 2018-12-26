@@ -64,6 +64,8 @@ DB_USERNAME=homestead
 DB_PASSWORD=secret
 
 DUMP_DIR=dumps
+DUMP_CREATE=true # create tables file
+DUMP_INSERT=true # insert data file
 
 DEBUG=false
 	`
