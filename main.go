@@ -2,6 +2,7 @@
 package main
 
 import (
+	"flag"
 	"path"
 	"time"
 
@@ -9,8 +10,12 @@ import (
 )
 
 var env map[string]string
+var createEnv *bool
 
 func main() {
+	if *createEnv {
+		return
+	}
 	// create dump/date folder
 	dumpDir(env["DUMP_SUB_DIR"])
 
@@ -21,6 +26,13 @@ func main() {
 }
 
 func init() {
+	createEnv = flag.Bool("--make-env", false, "create .env boilerplate file")
+
+	if *createEnv {
+		makeEnv()
+		return
+	}
+
 	err := godotenv.Load()
 	checkErr(err, "Error loading .env file")
 

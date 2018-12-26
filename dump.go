@@ -28,7 +28,6 @@ const createTableTemplate = `
 -- -----------------------
 -- Date: {{ .DateTime }}
 -- -----------------------
-
 {{ range .Tables }}
 --
 -- Table structure for table "{{ .Name }}"
@@ -41,7 +40,6 @@ const insertTableTemplate = `
 -- -----------------------
 -- Date: {{ .DateTime }}
 -- -----------------------
-
 {{ range .Tables }}
 --
 -- Dumping data for table {{ .Name }}

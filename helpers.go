@@ -21,21 +21,50 @@ func checkErr(err error, message string) {
 
 // checkParams - check func params
 func checkParams(data *map[string]string, params []string) {
+	var errList string
+
 	for _, v := range params {
 		if _, ok := (*data)[v]; ok != true {
-			log.Fatalf("Invalid env parameter %s ", v)
+			errList += "Invalid env parameter '" + v + "'\n"
 		}
+	}
+	if errList != "" {
+		log.Fatalf(
+			"We have a few problems with 'env' variables \n"+
+				"To create the '.env' file, specify the option --make-env\n\n"+
+				"%s", errList)
 	}
 }
 
 // dumpDir - make dump folder
 func dumpDir(dir string) (err error) {
 	if dir == "" {
-		log.Fatalf("Invalid env parameter %s ", dir)
+		log.Fatalf("Invalid .env parameter %s ", dir)
 	}
 
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		os.MkdirAll(dir, os.ModePerm)
 	}
 	return
+}
+
+// makeEnv - create .env file
+func makeEnv() {
+	tmpl := `# Examle .env vars
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=homestead
+DB_USERNAME=homestead
+DB_PASSWORD=secret
+
+DUMP_DIR=dumps
+	`
+	file, err := os.Create(".env")
+	checkErr(err, "Can't create file '.env'")
+	defer file.Close()
+
+	_, err = file.WriteString(tmpl)
+	checkErr(err, "Can't write file '.env'")
+
+	fmt.Println(".env file created")
 }
