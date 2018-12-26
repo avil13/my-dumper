@@ -134,7 +134,11 @@ func MakeDumpFiles(data *Dump, isInsert bool) {
 		log.Fatal(err)
 	}
 
-	fmt.Println("📃  Created: ", p)
+	stat, err := file.Stat()
+	checkErr(err, "Can't get stat of file "+fileName)
+
+	fmt.Println("📃  Created:", p)
+	fmt.Printf("      Size: %d kb \n", stat.Size()/1024)
 }
 
 func execTime(start time.Time) string {
