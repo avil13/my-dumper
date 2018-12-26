@@ -4,7 +4,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"path"
+	"path/filepath"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -48,16 +50,13 @@ func init() {
 		return
 	}
 
-	err := godotenv.Load()
-	if err != nil {
-		envLoadErrorMessage("Error loading .env file")
-	}
-	checkErr(err, "Error loading .env file")
+	ex, err := os.Executable()
+	checkErr(err, "Executeble")
 
-	env, err = godotenv.Read()
-	if err != nil {
-		envLoadErrorMessage("Error loading .env file variables")
-	}
+	envFile := path.Join(filepath.Dir(ex), ".env")
+
+	env, err = godotenv.Read(envFile)
+	checkErr(err, "Error loading .env file variables")
 
 	validKeys := []string{"TITLE", "DB_HOST", "DB_PORT", "DB_DATABASE", "DB_USERNAME", "DB_PASSWORD"}
 	checkParams(&env, validKeys)
