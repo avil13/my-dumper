@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"strconv"
 	"text/template"
 	"time"
 
@@ -137,8 +138,20 @@ func MakeDumpFiles(data *Dump, isInsert bool) {
 	stat, err := file.Stat()
 	checkErr(err, "Can't get stat of file "+fileName)
 
-	fmt.Println("📃  Created:", p)
-	fmt.Printf("      Size: %d kb \n", stat.Size()/1024)
+	size := stat.Size()
+	var sizeStr string
+	if size > (1024 * 1024 * 1024) {
+		sizeStr = strconv.FormatInt(size/(1024*1024*1024), 10) + " Gb"
+	} else if size > (1024 * 1024) {
+		sizeStr = strconv.FormatInt(size/(1024*1024), 10) + " Mb"
+	} else if size > 1024 {
+		sizeStr = strconv.FormatInt(size/1024, 10) + " kb"
+	} else {
+		sizeStr = strconv.FormatInt(size, 10) + " byte"
+	}
+
+	fmt.Println("📃 Created:", p)
+	fmt.Printf("      Size: %s \n", sizeStr)
 }
 
 func execTime(start time.Time) string {
