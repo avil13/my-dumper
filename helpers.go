@@ -31,7 +31,7 @@ func checkParams(data *map[string]string, params []string) {
 // dumpDir - make dump folder
 func dumpDir(dir string) (err error) {
 	if dir == "" {
-		dir = "dumps"
+		log.Fatalf("Invalid env parameter %s ", dir)
 	}
 
 	if _, err := os.Stat(dir); os.IsNotExist(err) {

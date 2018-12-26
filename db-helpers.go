@@ -111,7 +111,7 @@ func createTableValues(db *sql.DB, name string) (string, error) {
 		dataText = append(dataText, "("+strings.Join(dataStrings, ",")+")")
 	}
 
-	return strings.Join(dataText, ","), rows.Err()
+	return strings.Join(dataText, ", "), rows.Err()
 }
 
 func createTable(db *sql.DB, name string) (*Table, error) {

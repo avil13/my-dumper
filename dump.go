@@ -2,8 +2,11 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
+	"os"
+	"path"
 	"text/template"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -17,24 +20,51 @@ type Table struct {
 
 // Dump ...
 type Dump struct {
-	Tables []*Table
+	DateTime string
+	Tables   []*Table
 }
 
 const createTableTemplate = `
-{{range .Tables}}
+-- -----------------------
+-- Date: {{ .DateTime }}
+-- -----------------------
+
+{{ range .Tables }}
 --
--- Table structure for table {{ .Name }}
+-- Table structure for table "{{ .Name }}"
 --
 {{.SQL}}
 {{end}}
 `
 
+const insertTableTemplate = `
+-- -----------------------
+-- Date: {{ .DateTime }}
+-- -----------------------
+
+{{ range .Tables }}
+--
+-- Dumping data for table {{ .Name }}
+--
+LOCK TABLES {{ .Name }} WRITE;
+/*!40000 ALTER TABLE {{ .Name }} DISABLE KEYS */;
+{{ if .Values }}
+INSERT INTO {{ .Name }} VALUES {{ .Values }};
+{{ end }}
+/*!40000 ALTER TABLE {{ .Name }} ENABLE KEYS */;
+UNLOCK TABLES;
+
+{{ end }}
+
+`
+
 var reportCreate = template.Must(template.New("create").Parse(createTableTemplate))
+var reportInsert = template.Must(template.New("insert").Parse(insertTableTemplate))
 
 // Funcs(template.FuncMap{"dayAgo": daysAgo}).
 
 // GetDump - make dump
-func GetDump() {
+func GetDump() *Dump {
 	// Open connection to database
 	db, err := sql.Open("mysql", connectionString())
 	checkErr(err, "Connection error")
@@ -44,19 +74,48 @@ func GetDump() {
 	checkErr(err, "Not found tables")
 
 	data := Dump{
-		Tables: make([]*Table, 0),
+		DateTime: time.Now().Format("2006-01-02 15:04"),
+		Tables:   make([]*Table, 0),
 	}
 
 	for _, tableName := range tables {
 		table, err := createTable(db, tableName)
+
 		checkErr(err, "Can't create `"+tableName+"`")
+
 		data.Tables = append(data.Tables, table)
 	}
 
-	fmt.Println(data.Tables[0].SQL)
+	// fmt.Println(data.Tables[0].SQL)
+	return &data
 }
 
-// GetCreateSqlTables
-// func GetCreateSqlTables(data *Dump) (string, error) {
-// 	reportCreate.
-// }
+// MakeDumpFiles ...
+func MakeDumpFiles(data *Dump, isInsert bool) {
+	// file
+	var fileName string
+	if isInsert {
+		fileName = "insert.sql"
+	} else {
+		fileName = "create.sql"
+	}
+
+	p := path.Join(env["DUMP_SUB_DIR"], fileName)
+
+	file, err := os.Create(p)
+	checkErr(err, "Can't crate file "+fileName)
+	defer file.Close()
+
+	// template
+	var report *template.Template
+
+	if isInsert {
+		report = reportInsert
+	} else {
+		report = reportCreate
+	}
+
+	if err := report.Execute(file, data); err != nil {
+		log.Fatal(err)
+	}
+}
