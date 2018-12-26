@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"strconv"
 
 	"github.com/fatih/color"
 )
@@ -68,7 +70,7 @@ DUMP_CREATE=true # create tables file
 DUMP_INSERT=true # insert data file
 
 DEBUG=false
-	`
+`
 	file, err := os.Create(".env")
 	checkErr(err, "Can't create file '.env'")
 	defer file.Close()
@@ -77,4 +79,34 @@ DEBUG=false
 	checkErr(err, "Can't write file '.env'")
 
 	fmt.Println(".env file created")
+}
+
+// DirSize ...
+func DirSize(path string) (int64, error) {
+	var size int64
+	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return err
+	})
+	return size, err
+}
+
+// SizeToString ...
+func SizeToString(size int64) string {
+	var sizeStr string
+	if size > (1024 * 1024 * 1024) {
+		sizeStr = strconv.FormatInt(size/(1024*1024*1024), 10) + " Gb"
+	} else if size > (1024 * 1024) {
+		sizeStr = strconv.FormatInt(size/(1024*1024), 10) + " Mb"
+	} else if size > 1024 {
+		sizeStr = strconv.FormatInt(size/1024, 10) + " kb"
+	} else {
+		sizeStr = strconv.FormatInt(size, 10) + " byte"
+	}
+	return sizeStr
 }

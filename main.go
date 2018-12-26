@@ -33,6 +33,10 @@ func main() {
 	if env["DUMP_INSERT"] == "false" && env["DUMP_CREATE"] == "false" {
 		fmt.Println("⚠️  None of the files are not created")
 	}
+
+	dirSize, err := DirSize(env["DUMP_DIR"])
+	checkErr(err, "Dir size error")
+	fmt.Println("Dumps total size:", SizeToString(dirSize))
 }
 
 func init() {
