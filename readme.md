@@ -45,7 +45,7 @@ DB_PASSWORD | true | secret |
 DUMP_CREATE | true | true | create tables file
 DUMP_INSERT| true | true | insert data file
 DUMP_DIR | false | dumps | Folder for dump
-IGNORE_TABLES |false| `peoples|likes` | if you want to ignore some tables, specify them with the symbol `|` 
+IGNORE_TABLES |false| peoples\|likes | if you want to ignore some tables, specify them with the symbol \| 
 DEBUG | false | false | for debugging the file names do not contain the creation date
 
 
