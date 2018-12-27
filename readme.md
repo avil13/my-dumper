@@ -34,20 +34,21 @@ $ ./dmpr -make-env
 
 ### env parameters
 
-.env param | required | example | description
-|---|---|---|---|
-TITLE | true | example.com |
-DB_HOST | true | mysql |
-DB_PORT | true | 3306 |
-DB_DATABASE | true | homestead |
-DB_USERNAME | true | homestead |
-DB_PASSWORD | true | secret |
-DUMP_CREATE | true | true | create tables file
-DUMP_INSERT| true | true | insert data file
-DUMP_DIR | false | dumps | Folder for dump
-IGNORE_TABLES |false| peoples\|likes | if you want to ignore some tables, specify them with the symbol \| 
-DEBUG | false | false | for debugging the file names do not contain the creation date
-
+.env param | required  | example | description
+|---           |---    |---|---|
+TITLE          | true  | example.com |
+DB_HOST        | true  | mysql |
+DB_PORT        | true  | 3306 |
+DB_DATABASE    | true  | homestead |
+DB_USERNAME    | true  | homestead |
+DB_PASSWORD    | true  | secret |
+DUMP_CREATE    | true  | true | create tables file
+DUMP_INSERT    | true  | true | insert data file
+DUMP_DIR       | false | dumps | Folder for dump
+IGNORE_TABLES  | false | peoples\|likes | if you want to ignore some tables, specify them with the symbol \| 
+DEBUG          | false | false | for debugging the file names do not contain the creation date
+LOG            | false | true | Create a file logging errors
+LOG_ERROR_FILE | false | error.log | filename error log
 
 ### flags
 

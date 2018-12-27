@@ -3,3 +3,5 @@ dmpr.exe
 
 dumps/
 .env
+
+*.log

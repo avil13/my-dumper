@@ -4,6 +4,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -18,7 +19,13 @@ var createEnv bool
 var dumpAll bool
 var importSQLFile string
 
+var logFile *os.File
+
 func main() {
+	if logFile != nil {
+		defer logFile.Close()
+	}
+
 	if createEnv {
 		return
 	}
@@ -37,19 +44,19 @@ func init() {
 	flag.StringVar(&importSQLFile, "import", "", "import dump file")
 	flag.Parse()
 
+	ex, err := os.Executable()
+	checkErr(err, "Executeble")
+	currentDir = filepath.Dir(ex)
+
 	if createEnv {
 		makeEnv()
 		return
 	}
 
-	ex, err := os.Executable()
-	checkErr(err, "Executeble")
-
-	currentDir = filepath.Dir(ex)
 	envFile := path.Join(currentDir, ".env")
-
 	env, err = godotenv.Read(envFile)
 	checkErr(err, "Error loading .env file variables")
+	loggerInit()
 
 	validKeys := []string{"TITLE", "DB_HOST", "DB_PORT", "DB_DATABASE", "DB_USERNAME", "DB_PASSWORD"}
 	checkParams(&env, validKeys)
@@ -80,4 +87,27 @@ func createDump() {
 	dirSize, err := DirSize(env["DUMP_DIR"])
 	checkErr(err, "Dir size error")
 	fmt.Println("Dumps total size:", SizeToString(dirSize))
+}
+
+// loggerInit write logs
+func loggerInit() {
+	if env["LOG"] != "true" {
+		return
+	}
+
+	var logFileName string
+	if env["LOG_ERROR_FILE"] == "" {
+		logFileName = "error.log"
+	} else {
+		logFileName = env["LOG_ERROR_FILE"]
+	}
+	logFileName = path.Join(currentDir, logFileName)
+
+	logFile, err := os.OpenFile(logFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	// defer logFile.Close() // close in the main()
+
+	log.SetOutput(logFile)
 }

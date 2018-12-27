@@ -15,6 +15,8 @@ func checkErr(err error, message string) {
 	if err != nil {
 		color.Set(color.FgHiRed)
 		fmt.Println(message)
+
+		log.Println("-->\n" + message)
 		log.Fatal(err)
 		// panic(err)
 		color.Unset()
@@ -73,6 +75,8 @@ DUMP_INSERT=true # insert data file
 #IGNORE_TABLES=peoples|likes
 
 DEBUG=false
+LOG=false
+LOG_ERROR_FILE=error.log
 `
 	file, err := os.Create(".env")
 	checkErr(err, "Can't create file '.env'")
