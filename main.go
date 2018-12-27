@@ -13,6 +13,7 @@ import (
 )
 
 var env map[string]string
+var currentDir string
 var createEnv bool
 var dumpAll bool
 var importSQLFile string
@@ -44,7 +45,8 @@ func init() {
 	ex, err := os.Executable()
 	checkErr(err, "Executeble")
 
-	envFile := path.Join(filepath.Dir(ex), ".env")
+	currentDir = filepath.Dir(ex)
+	envFile := path.Join(currentDir, ".env")
 
 	env, err = godotenv.Read(envFile)
 	checkErr(err, "Error loading .env file variables")
@@ -52,6 +54,7 @@ func init() {
 	validKeys := []string{"TITLE", "DB_HOST", "DB_PORT", "DB_DATABASE", "DB_USERNAME", "DB_PASSWORD"}
 	checkParams(&env, validKeys)
 
+	env["DUMP_DIR"] = path.Join(currentDir, env["DUMP_DIR"])
 	env["DUMP_SUB_DIR"] = path.Join(env["DUMP_DIR"], time.Now().Format("2006-01-02"))
 }
 
