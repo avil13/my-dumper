@@ -14,35 +14,26 @@ import (
 
 var env map[string]string
 var createEnv bool
+var dumpAll bool
+var importSQLFile string
 
 func main() {
 	if createEnv {
 		return
 	}
-	// create dump/date folder
-	dumpDir(env["DUMP_SUB_DIR"])
 
-	dump := GetDump()
-
-	if env["DUMP_CREATE"] != "false" {
-		MakeDumpFiles(dump, false)
+	if importSQLFile != "" {
+		Insert(importSQLFile)
+		return
 	}
 
-	if env["DUMP_INSERT"] != "false" {
-		MakeDumpFiles(dump, true)
-	}
-
-	if env["DUMP_INSERT"] == "false" && env["DUMP_CREATE"] == "false" {
-		fmt.Println("⚠️  None of the files are not created")
-	}
-
-	dirSize, err := DirSize(env["DUMP_DIR"])
-	checkErr(err, "Dir size error")
-	fmt.Println("Dumps total size:", SizeToString(dirSize))
+	createDump()
 }
 
 func init() {
 	flag.BoolVar(&createEnv, "make-env", false, "create .env boilerplate file")
+	flag.BoolVar(&dumpAll, "all", false, "create all dump files")
+	flag.StringVar(&importSQLFile, "import", "", "import dump file")
 	flag.Parse()
 
 	if createEnv {
@@ -62,4 +53,28 @@ func init() {
 	checkParams(&env, validKeys)
 
 	env["DUMP_SUB_DIR"] = path.Join(env["DUMP_DIR"], time.Now().Format("2006-01-02"))
+}
+
+// createDump function for create dump files
+func createDump() {
+	// create dump/date folder
+	dumpDir(env["DUMP_SUB_DIR"])
+
+	dump := GetDump()
+
+	if dumpAll || env["DUMP_CREATE"] != "false" {
+		MakeDumpFiles(dump, false)
+	}
+
+	if dumpAll || env["DUMP_INSERT"] != "false" {
+		MakeDumpFiles(dump, true)
+	}
+
+	if !dumpAll && (env["DUMP_INSERT"] == "false" && env["DUMP_CREATE"] == "false") {
+		fmt.Println("⚠️  None of the files are not created")
+	}
+
+	dirSize, err := DirSize(env["DUMP_DIR"])
+	checkErr(err, "Dir size error")
+	fmt.Println("Dumps total size:", SizeToString(dirSize))
 }
