@@ -73,3 +73,16 @@ Usage of ./dmpr:
   -make-env
     	create .env boilerplate file
 ```
+
+
+### example of a generated file
+
+```bash 
+$ tree .
+.
+├── dmpr
+└── dumps
+    └── 2018-12-27
+        └── 2018-12-27_03:57_insert.sql
+
+```
