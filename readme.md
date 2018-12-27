@@ -9,7 +9,7 @@
 ### Is able to:
 
 - Dump the database with the time of creation of the file in the title
-- Separates table creation files and data insertion files in talits
+- Separates table creation files and data insertion files
 - Execute SQL data from files
 - Ignores the dump tables specified in the config
 - Uses `.env` file to set up environment
@@ -34,7 +34,7 @@ For create exemple .env file
 
 ### env parameters
 
-|param| required | example | description
+.env param | required | example | description
 |---|---|---|---|
 TITLE | true | example.com |
 DB_HOST | true | mysql |
@@ -45,9 +45,20 @@ DB_PASSWORD | true | secret |
 DUMP_CREATE | true | true | create tables file
 DUMP_INSERT| true | true | insert data file
 DUMP_DIR | false | dumps | Folder for dump
-IGNORE_TABLES |false| peoples\|likes | if you want to ignore some tables, specify them with the symbol \| |
+IGNORE_TABLES |false| `peoples|likes` | if you want to ignore some tables, specify them with the symbol `|` 
 DEBUG | false | false | for debugging the file names do not contain the creation date
 
 
+### flags
 
+```bash
+./dmpr -make-env # create .env file
+```
 
+```bash
+./dmpr -all # Ignore .env parameters DUMP_CREATE and DUMP_INSERT
+```
+
+```bash
+./dmpr -import path/to/file.sql # Execute sql file
+```
