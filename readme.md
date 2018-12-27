@@ -17,19 +17,19 @@
 
 ## Create dump
 ```bash
-./dmpr
+$ ./dmpr
 ```
 
 ## Execute SQL data from files
 ```bash
-./dmpr -import path/to/file.sql
+$ ./dmpr -import path/to/file.sql
 ```
 
 ## `.env` config
 
 For create exemple .env file
 ```bash
-./dmpr -make-env
+$ ./dmpr -make-env
 ```
 
 ### env parameters
@@ -52,13 +52,24 @@ DEBUG | false | false | for debugging the file names do not contain the creation
 ### flags
 
 ```bash
-./dmpr -make-env # create .env file
+$ ./dmpr -make-env # create .env file
 ```
 
 ```bash
-./dmpr -all # Ignore .env parameters DUMP_CREATE and DUMP_INSERT
+$ ./dmpr -all # Ignore .env parameters DUMP_CREATE and DUMP_INSERT
 ```
 
 ```bash
-./dmpr -import path/to/file.sql # Execute sql file
+$ ./dmpr -import path/to/file.sql # Execute sql file
+```
+
+```bash
+$ ./dmpr -help
+Usage of ./dmpr:
+  -all
+    	create all dump files
+  -import string
+    	import dump file
+  -make-env
+    	create .env boilerplate file
 ```
