@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"strings"
 	"text/template"
 	"time"
 
@@ -89,9 +90,21 @@ func GetDump() *Dump {
 		Tables: make([]*Table, 0),
 	}
 
-	for _, tableName := range tables {
-		table, err := createTable(db, tableName)
+	ignoreTables := make(map[string]bool)
 
+	if env["IGNORE_TABLES"] != "" {
+		ignoreTablesStrings := strings.Split(string(env["IGNORE_TABLES"]), "|")
+		for _, table := range ignoreTablesStrings {
+			ignoreTables[table] = true
+		}
+	}
+
+	for _, tableName := range tables {
+		if ignoreTables[tableName] {
+			continue
+		}
+
+		table, err := createTable(db, tableName)
 		checkErr(err, "Can't create `"+tableName+"`")
 
 		data.Tables = append(data.Tables, table)

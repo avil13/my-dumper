@@ -69,6 +69,9 @@ DUMP_DIR=dumps
 DUMP_CREATE=true # create tables file
 DUMP_INSERT=true # insert data file
 
+# if you want to ignore some tables, specify them with the symbol |
+#IGNORE_TABLES=peoples|likes
+
 DEBUG=false
 `
 	file, err := os.Create(".env")
